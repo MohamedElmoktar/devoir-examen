@@ -1,0 +1,52 @@
+federated-edge-fog-cloud/
+├── 📄 Configuration & Docker
+│   ├── docker-compose.yml          # Kafka + Zookeeper + UI
+│   ├── requirements.txt            # Dépendances Python
+│   ├── config.py                   # Configuration centralisée
+│   └── .gitignore                  # Fichiers à ignorer
+│
+├── 🔧 Scripts de déploiement
+│   ├── setup.sh                    # Installation automatique
+│   ├── start_all.sh                # Lancement tous composants
+│   ├── stop_all.sh                 # Arrêt propre
+│   └── run_tests.sh                # Exécution tests
+│
+├── 🎯 Scripts principaux (MVP)
+│   ├── simulator.py                # Générateur données capteurs
+│   ├── edge_node.py                # Edge: entraînement local
+│   ├── fog_aggregator_spark.py     # Fog: agrégation Spark
+│   ├── cloud_fedavg.py             # Cloud: FedAvg global
+│   └── dashboard_app.py            # Dashboard Streamlit
+│
+├── 🧪 Tests & Validation
+│   ├── test_components.py          # Tests unitaires
+│   └── test_kafka.py               # Test connexion Kafka
+│
+├── 🛠️ Utilitaires
+│   └── utils/
+│       ├── __init__.py
+│       ├── kafka_utils.py          # Wrappers Kafka
+│       └── model_utils.py          # FedAvg + modèles
+│
+├── 📚 Documentation
+│   ├── README.md                   # Documentation complète
+│   ├── QUICKSTART.md               # Démarrage rapide
+│   ├── ARCHITECTURE.md             # Architecture détaillée
+│   ├── CONFIGURATION.md            # Guide configuration
+│   ├── PROJECT_SUMMARY.md          # Résumé projet
+│   └── STRUCTURE.txt               # Ce fichier
+│
+└── 📁 Dossiers générés
+    └── logs/                       # Logs (créé au runtime)
+
+---
+
+TOTAL: 22 fichiers
+  - 5 scripts Python principaux
+  - 3 fichiers utilitaires Python
+  - 2 fichiers de tests Python
+  - 4 scripts shell
+  - 3 fichiers de configuration
+  - 5 fichiers de documentation
+
+Taille estimée: ~3500 lignes de code

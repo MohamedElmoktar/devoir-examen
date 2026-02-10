@@ -1,0 +1,62 @@
+# Federated Learning Infrastructure - Kafka Only
+# Spark runs locally via PySpark
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    networks:
+      - kafka-network
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka-init
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      echo 'Waiting for Kafka to be ready...'
+      cub kafka-ready -b kafka:9092 1 60
+
+      echo 'Creating Kafka topics...'
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 2 --replication-factor 1 --topic sensor-data-node-1
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 2 --replication-factor 1 --topic sensor-data-node-2
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 2 --replication-factor 1 --topic model-weights
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions 2 --replication-factor 1 --topic global-model
+
+      echo 'Listing topics:'
+      kafka-topics --list --bootstrap-server kafka:9092
+
+      echo 'Topics created successfully!'
+      "
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    driver: bridge
